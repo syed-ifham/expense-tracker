@@ -1,0 +1,44 @@
+server:
+  port: 9090
+
+
+spring:
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+# Database Configuration
+app:
+  db:
+    # Temporary Database
+    temp:
+      path: ./temp/phone.db
+      driver: org.sqlite.JDBC
+      name: phone.db
+      table-name: message
+    
+    # Persistent Database
+    persistent:
+      path: ./store/tracker.db
+      driver: org.sqlite.JDBC
+      name: tracker.db
+      table-name: message
+    
+    app:
+      name: Expense Tracker
+      version: 1.0.0
+
+# Logging Configuration
+logging:
+  level:
+    root: WARN
+    tracker: INFO
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(%-5level){bold} %clr([%thread]){faint} %clr(%-40logger{39}){cyan} : %msg%n"
+
