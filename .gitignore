@@ -3,7 +3,10 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+.mnv/
 temp/
+store/
 
 ### STS ###
 .apt_generated
@@ -32,3 +35,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local secrets & data ###
+.env
+.env.*
+*.local
+application-local.*
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
