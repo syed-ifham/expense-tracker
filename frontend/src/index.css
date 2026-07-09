@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+    /* Brand Primary Colors */
+    --color-brand-50: #f5f6ff;
+    --color-brand-100: #ebedff;
+    --color-brand-500: #4f46e5; /* The rich electric indigo for your active tabs / metrics */
+    --color-brand-600: #4338ca;
+    --color-brand-700: #3730a3;
+
+    /* Semantic UI Colors suited for Financial Metrics */
+    --color-income: #10b981;     /* Emerald Green for Positive Inflow / Top-ups */
+    --color-expense: #ef4444;    /* Crimson Red for Expenses / Outflow */
+    --color-balance: #4f46e5;    /* Theme Primary matching your Total Balance card */
+
+    /* Structural/Surface Slate Grays */
+    --color-panel-bg: #ffffff;   /* Dashboard Card White background */
+    --color-canvas-bg: #f8fafc;  /* Soft cool-gray page canvas tint */
+    --color-sidebar-bg: #ffffff; /* Clean sidebar format background */
+
+    /* Border Radii Enhancements matching the visual asset */
+    --radius-card: 1rem;         /* Modern smooth curves seen on your layout cards */
+    --radius-badge: 0.5rem;      /* Percent tags (+12% this month) */
+}
+
+/* Base resets to mirror the smooth UI font metrics */
+@layer base {
+    body {
+        @apply bg-canvas-bg text-slate-900 antialiased;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+}

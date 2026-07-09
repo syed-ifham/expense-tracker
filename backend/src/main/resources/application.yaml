@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+app:
+  version: 1.0.0
+  name: Smart Expense Tracker
+  db:
+    source:
+      jdbcUrl: jdbc:sqlite:./db/source/phone.db
+      driverClassName: org.sqlite.JDBC
+      metadata:
+        path: "./db/source/phone.db"
+        name: "phone.db"
+      hikari:
+        maximumPoolSize: 1
+
+    persist:
+      jdbcUrl: jdbc:sqlite:./db/persist/persist.db
+      driverClassName: org.sqlite.JDBC
+      metadata:
+        schema: persistDBSchema.sql
+        path: ./db/persist/persist.db
+        name: persist.db
+      hikari:
+        maximumPoolSize: 1
+
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){dim} %clr(%-5level) %clr([%thread]){magenta} %clr(%logger{0}){cyan} - %clr(%msg){yellow}%n"
+  level:
+    root: INFO
+    org.springframework.data.jdbc: DEBUG
+
+#  file:
+#    name: logs/backend-app.log
+#( also define policy : file size, how long history stored)
