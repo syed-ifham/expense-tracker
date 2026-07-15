@@ -20,7 +20,7 @@ public class TransactionRepository {
         String sql = """
                 SELECT message_id, payment_method, direction, amount, remittance, transaction_date, category 
                 FROM transactions 
-                ORDER BY transaction_date DESC 
+                ORDER BY message_id DESC 
                 LIMIT :limit OFFSET :offset
                 """;
         return jdbc.sql(sql)
@@ -36,4 +36,47 @@ public class TransactionRepository {
                 .query(Long.class)
                 .single();
     }
+
+    public List<Transaction> findLastMonthCredit() {
+        String sql = """
+    SELECT 
+        message_id,
+        payment_method,
+        direction,
+        amount,
+        remittance,
+        transaction_date,
+        category
+    FROM transactions
+    WHERE transaction_date >= DATE('now', '-30 days')
+    AND direction = 'CREDIT'
+    ORDER BY message_id DESC;
+    """;
+
+        return jdbc.sql(sql)
+                .query(Transaction.class)
+                .list();
+    }
+
+    public List<Transaction> findLastMonthDebit() {
+        String sql = """
+                SELECT 
+                    message_id,
+                    payment_method,
+                    direction,
+                    amount,
+                    remittance,
+                    transaction_date,
+                    category
+                FROM transactions
+                WHERE transaction_date >= DATE('now', '-30 days')
+                AND direction = 'DEBIT'
+                ORDER BY message_id DESC;
+                """;
+
+        return jdbc.sql(sql)
+                .query(Transaction.class)
+                .list();
+    }
+
 }

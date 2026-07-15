@@ -2,8 +2,8 @@ import {CARDS_STYLE} from "./dashboard.js";
 
 export default function Card({title, amount = 0, variant = 'balance'}) {
 
-  const styles = CARDS_STYLE;
 
+  const styles = CARDS_STYLE;
   const currentStyle = styles[variant] || styles.balance;
   const IconComponent = currentStyle.Icon;
 

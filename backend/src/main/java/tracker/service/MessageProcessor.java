@@ -21,15 +21,16 @@ public class MessageProcessor {
     private final SourceRepo sourceRepo;
     private final List<SmsParsingStrategy> strategies;
 
-    MessageProcessor(PersistRepo persistRepo, SourceRepo sourceRepo, List<SmsParsingStrategy> strategies) {
+    public MessageProcessor(PersistRepo persistRepo, SourceRepo sourceRepo, List<SmsParsingStrategy> strategies) {
         this.persistRepo = persistRepo;
         this.sourceRepo = sourceRepo;
         this.strategies = strategies;
     }
 
-    public List<RawMessage> mapMessageToRawMessage(List<Message> messages) {
+    public List<RawMessage> mapMessageToRawMessage() {
+        List<Message> messages = sourceRepo.findAll();
         return messages.stream()
-                .map(msg -> this.messageToRawMessage(msg))
+                .map(this::messageToRawMessage)
                 .toList();
     }
 
@@ -37,7 +38,7 @@ public class MessageProcessor {
         return new RawMessage(message.message_id(), message.from_address(), message.body(), message.timestamp());
     }
 
-    public void ProcessRawMessages(List<RawMessage> rawMessages) {
+    public void processRawMessages(List<RawMessage> rawMessages) {
         log.info("Processing raw messages");
         int count =0;
         for (RawMessage rm : rawMessages) {

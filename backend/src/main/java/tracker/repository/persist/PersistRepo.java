@@ -47,4 +47,22 @@ public class PersistRepo {
         return jdbc.sql(sql).query(Transaction.class).list();
     }
 
+    public Transaction findTransactionById(long id) {
+        String sql = """
+        SELECT 
+            message_id, 
+            payment_method, 
+            direction, 
+            amount,
+            
+            remittance, 
+            transaction_date, 
+            category 
+        FROM transactions 
+        WHERE message_id = ?
+        """;
+        return jdbc.sql(sql)
+                .params(id)
+                .query(Transaction.class).single();
+    }
 }

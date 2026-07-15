@@ -24,6 +24,10 @@ app:
       hikari:
         maximumPoolSize: 1
 
+  path:
+    sourceDbPath: C:\Users\syedi\AppData\Local\Packages\Microsoft.YourPhone_8wekyb3d8bbwe\LocalCache\Indexed\fe43b75f-00e7-4bb9-b9c5-077218994971\System\Database
+    targetDbPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source
+
 
 logging:
   pattern:
@@ -35,3 +39,4 @@ logging:
 #  file:
 #    name: logs/backend-app.log
 #( also define policy : file size, how long history stored)
+

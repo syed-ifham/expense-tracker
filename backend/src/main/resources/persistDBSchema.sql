@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS transactions
     message_id       INTEGER PRIMARY KEY, -- Unique ID from source.db
     payment_method   TEXT     NOT NULL,   -- 'UPI', 'CARD'
     direction        TEXT     NOT NULL,   -- 'DEBIT' or 'CREDIT'
-    amount           REAL     NOT NULL,   -- Stored as standard Rupee decimal
+    amount           REAL     NOT NULL,   -- Stored as standard paise
     remittance       TEXT,                -- The other party
     transaction_date DATETIME NOT NULL,   -- Standardized format
     category         TEXT DEFAULT 'Uncategorized',

@@ -1,26 +1,34 @@
+# Databases (local SQLite files)
+/db/
+**/db/
+*.db
+*.db-shm
+*.db-wal
 
-db/
-.mvn/
-.idea/
+# Maven / build
+/target/
+!.mvn/wrapper/maven-wrapper.jar
 
-
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE
+/.idea/
+.vscode/
 *.iml
-*.ipr
 
+# Compiled
+**/*.class
+
+# Logs and runtime files
+logs/
+*.log
+*.pid
+
+# Env / secrets
+.env
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Others
+*.swp

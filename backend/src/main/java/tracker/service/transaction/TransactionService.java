@@ -21,8 +21,25 @@ public class TransactionService {
         long totalRows = repo.countAll();
         int totalPages = (int) Math.ceil((double) totalRows / size);
         PageMeta meta = new PageMeta(page, size, totalRows, totalPages);
-
         return new PageResponse<>(transactions, meta);
+    }
+
+    public Long getTransactionsLastMonthCredit() {
+        List<Transaction> lastMonth = repo.findLastMonthCredit();
+        long amount = 0L;
+        for (Transaction transaction : lastMonth) {
+            amount += transaction.amount();
+        }
+        return amount;
+    }
+
+    public Long getTransactionsLastMonthDebit() {
+        List<Transaction> lastMonth = repo.findLastMonthDebit();
+        long amount = 0L;
+        for (Transaction transaction : lastMonth) {
+            amount += transaction.amount();
+        }
+        return amount;
     }
 
 }
