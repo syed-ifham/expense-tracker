@@ -1,6 +1,4 @@
 # Databases (local SQLite files)
-/db/
-**/db/
 *.db
 *.db-shm
 *.db-wal
