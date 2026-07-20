@@ -9,25 +9,25 @@ app:
       jdbcUrl: jdbc:sqlite:./db/source/phone.db
       driverClassName: org.sqlite.JDBC
       metadata:
-        path: "./db/source/phone.db"
-        name: "phone.db"
+        path: ./db/source/phone.db
+        name: phone.db
       hikari:
         maximumPoolSize: 1
 
     persist:
-      jdbcUrl: jdbc:sqlite:./db/persist/persist.db
+      jdbcUrl: jdbc:sqlite:C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\app\app.db
       driverClassName: org.sqlite.JDBC
       metadata:
         schema: persistDBSchema.sql
-        path: ./db/persist/persist.db
-        name: persist.db
+        path: ./db/app/app.db
+        name: app.db
       hikari:
         maximumPoolSize: 1
 
   path:
-    sourceDbPath: C:\Users\syedi\AppData\Local\Packages\Microsoft.YourPhone_8wekyb3d8bbwe\LocalCache\Indexed\fe43b75f-00e7-4bb9-b9c5-077218994971\System\Database
-    targetDbPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source
-
+    sourceDBPath: C:\Users\syedi\AppData\Local\Packages\Microsoft.YourPhone_8wekyb3d8bbwe\LocalCache\Indexed\fe43b75f-00e7-4bb9-b9c5-077218994971\System\Database
+    appSourceDBPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source
+    appDBPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\app
 
 logging:
   pattern:
