@@ -26,7 +26,7 @@
 
 ### What We Built
 
-**Smart Financial Tracker** is an **automated, intelligent system** that transforms raw SMS messages into structured financial data, providing real-time transaction tracking, categorization, and analytics through a modern web dashboard.
+**Smart Financial Tracker** is an **automated, intelligent system** that transforms raw SMS sourceMessages into structured financial data, providing real-time transaction tracking, categorization, and analytics through a modern web dashboard.
 
 ### Key Innovations
 
@@ -35,7 +35,7 @@
 | **SMS Intelligence** | Pattern-based parsing strategies | Automatically extracts transaction data from 95% of bank SMS formats |
 | **Dual Database** | Separate read-only (source) and read-write (persist) SQLite DBs | Data integrity, clear separation of concerns |
 | **Strategy Pattern** | Extensible parsing framework with hot-swappable strategies | Add new bank formats in <10 minutes without code changes |
-| **Real-time Sync** | Continuous processing of new SMS messages | Transactions appear in dashboard within seconds |
+| **Real-time Sync** | Continuous processing of new SMS sourceMessages | Transactions appear in dashboard within seconds |
 
 ---
 
@@ -52,7 +52,7 @@
 
 #### Technical Metrics
 
-- **Processing Speed**: 100+ messages/second on commodity hardware
+- **Processing Speed**: 100+ sourceMessages/second on commodity hardware
 - **Storage Efficiency**: <1KB per transaction (SQLite)
 - **Resource Footprint**: <50MB RAM, <100MB disk
 - **Uptime**: 99.9% (embedding-friendly, no external dependencies)
@@ -218,7 +218,7 @@ npm run build
 
 1. Implement `SmsParsingStrategy` interface
 2. Add `@Component` annotation for Spring auto-discovery
-3. Test with sample SMS messages
+3. Test with sample SMS sourceMessages
 
 ---
 

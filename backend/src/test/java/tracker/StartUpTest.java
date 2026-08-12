@@ -4,10 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.io.TempDir;
-import tracker.startup.exception.db.AppSourceDatabaseNotFoundException;
-import tracker.startup.exception.db.SourceDatabaseNotFoundException;
-import tracker.startup.exception.db.SourceFileLockedException;
-import tracker.startup.step.CheckDBExistStep;
+import tracker.reload.exception.DatabaseNotFoundException;
+import tracker.reload.exception.SourceFileLockedException;
+import tracker.reload.service.DatabaseCopyService;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -20,7 +19,7 @@ import java.time.Instant;
 
 class StartUpTest {
 
-    private CheckDBExistStep checkDBExistStep;
+    private DatabaseCopyService databaseCopyService;
     private final String[] dbNames = {"phone.db", "phone.db-shm", "phone.db-wal"};
 
     @TempDir
@@ -30,7 +29,7 @@ class StartUpTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        checkDBExistStep = new CheckDBExistStep();
+        databaseCopyService = new DatabaseCopyService();
         mockSourceDir = sandboxDir.resolve("source_system_db");
         mockTargetDir = sandboxDir.resolve("target_app_db");
 
@@ -48,7 +47,7 @@ class StartUpTest {
         Files.setLastModifiedTime(source, FileTime.from(Instant.parse("2026-01-01T00:00:00Z")));
         Files.setLastModifiedTime(target, FileTime.from(Instant.parse("2025-01-01T00:00:00Z")));
 
-        boolean result = checkDBExistStep.checkLastModify(source, target);
+        boolean result = databaseCopyService.checkLastModify(source, target);
         Assertions.assertTrue(result, "Should return true because source is newer than target");
     }
 
@@ -62,7 +61,7 @@ class StartUpTest {
         Files.setLastModifiedTime(source, FileTime.from(Instant.parse("2026-01-01T00:00:00Z")));
         Files.setLastModifiedTime(target, FileTime.from(Instant.parse("2026-01-01T00:00:00Z")));
 
-        boolean result = checkDBExistStep.checkLastModify(source, target);
+        boolean result = databaseCopyService.checkLastModify(source, target);
         Assertions.assertFalse(result, "Should return true because source is newer than target");
     }
 
@@ -72,7 +71,7 @@ class StartUpTest {
         for (String db : dbNames) {
             Files.writeString(mockTargetDir.resolve(db), "writing mocking data");
         }
-        Assertions.assertDoesNotThrow(() -> checkDBExistStep.reloadAppSourceDB(mockSourceDir, mockTargetDir, dbNames));
+        Assertions.assertDoesNotThrow(() -> databaseCopyService.reloadAppSourceDB(mockSourceDir, mockTargetDir, dbNames));
 
         Assertions.assertTrue(Files.exists(mockTargetDir));
 
@@ -97,7 +96,7 @@ class StartUpTest {
         try(RandomAccessFile raf  = new RandomAccessFile(sourceFile.toFile(),"rw"); FileChannel channel = raf.getChannel(); FileLock lock = channel.lock()){
             if (lock != null) {
                 Assertions.assertThrows(SourceFileLockedException.class, () -> {
-                    checkDBExistStep.reloadAppSourceDB(mockSourceDir, mockTargetDir, dbNames);
+                    databaseCopyService.reloadAppSourceDB(mockSourceDir, mockTargetDir, dbNames);
                 });
             } else {
                 Assertions.fail("Could not acquire an exclusive lock to perform the test.");
@@ -111,7 +110,7 @@ class StartUpTest {
         Path fakePhoneDb = sandboxDir.resolve("phone.db");
         Files.createFile(fakePhoneDb);
         Assertions.assertDoesNotThrow(() ->
-                checkDBExistStep.checkSourceDB(fakePhoneDb)
+                databaseCopyService.checkSourceDB(fakePhoneDb)
         );
     }
 
@@ -120,7 +119,7 @@ class StartUpTest {
         Path nonExistentDb = sandboxDir.resolve("missing_phone.db");
 
         Assertions.assertThrowsExactly(SourceDatabaseNotFoundException.class, () ->
-                checkDBExistStep.checkSourceDB(nonExistentDb)
+                databaseCopyService.checkSourceDB(nonExistentDb)
         );
     }
 
@@ -130,7 +129,7 @@ class StartUpTest {
         Path fakeAppSourceDir = sandboxDir.resolve("db/source");
         Files.createDirectories(fakeAppSourceDir);
         Assertions.assertDoesNotThrow(() ->
-                checkDBExistStep.checkAppSourceDB(fakeAppSourceDir)
+                databaseCopyService.checkAppSourceDB(fakeAppSourceDir)
         );
     }
 
@@ -138,8 +137,8 @@ class StartUpTest {
     void shouldThrowWhenAppSourceDatabaseDoesNotExist() {
         Path nonExistentDir = sandboxDir.resolve("missing_app_dir");
 
-        Assertions.assertThrowsExactly(AppSourceDatabaseNotFoundException.class, () ->
-                checkDBExistStep.checkAppSourceDB(nonExistentDir)
+        Assertions.assertThrowsExactly(DatabaseNotFoundException.class, () ->
+                databaseCopyService.checkAppSourceDB(nonExistentDir)
         );
     }
 }

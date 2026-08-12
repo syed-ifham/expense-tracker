@@ -5,11 +5,13 @@ package tracker.startup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tracker.startup.exception.db.AppDatabaseNotFoundException;
-import tracker.startup.exception.db.AppSourceDatabaseNotFoundException;
-import tracker.startup.exception.db.SourceDatabaseNotFoundException;
-import tracker.startup.step.CheckDBExistStep;
+import tracker.persistence.schema.AppSchemaInitializer;
+import tracker.reload.exception.DatabaseNotFoundException;
+import tracker.reload.service.DataSynchronizationService;
+import tracker.reload.service.DatabaseCopyService;
+import tracker.reload.service.DatabaseVerificationService;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -17,61 +19,83 @@ import java.nio.file.Path;
 @Service
 public class StartUpService {
 
-    @Value("${app.path.sourceDBPath}")
-    private Path sourceDbPath;
+    @Value("${app.path.windowsPhoneLinkSourceDir}")
+    private Path windowsPhoneLinkSourceDir;
 
-    @Value("${app.path.appSourceDBPath}")
-    private Path appSourceDBPath;
+    @Value("${app.path.appSourceDatabaseDir}")
+    private Path appSourceDatabaseDir;
 
-    @Value("${app.path.appDBPath}")
-    private Path appDBPath;
+    @Value("${app.path.appPersistDatabaseDir}")
+    private Path appPersistDatabaseDir;
 
-    private final String[] dbNames = {"phone.db", "phone.db-shm", "phone.db-wal"};
+    @Value("${app.db.persist.metadata.name}")
+    private String appDatabaseName;
 
+    private final String[] SOURCE_DATABASE_FILES = {"phone.db", "phone.db-shm", "phone.db-wal"};
 
-    private final CheckDBExistStep checkDBExistStep;
+    private final DatabaseVerificationService verify;
+    private final DatabaseCopyService databaseCopyService;
+    private final AppSchemaInitializer appSchemaInitializer;
+    private final DataSynchronizationService dataSynchronizationService;
 
-    public StartUpService(CheckDBExistStep checkDBExistStep) {
-        this.checkDBExistStep = checkDBExistStep;
+    public StartUpService(DatabaseCopyService databaseCopyService, DatabaseVerificationService verify, AppSchemaInitializer appSchemaInitializer, DataSynchronizationService dataSynchronizationService) {
+        this.databaseCopyService = databaseCopyService;
+        this.verify = verify;
+        this.appSchemaInitializer = appSchemaInitializer;
+        this.dataSynchronizationService = dataSynchronizationService;
     }
 
-    public void startUp() {
+    public void initializeSourceDatabase() {
 
-        // --- source reloading checkup
         // 1. check for phone link datasource
         try {
-            checkDBExistStep.checkSourceDB(sourceDbPath.resolve("phone.db"));
-        } catch (SourceDatabaseNotFoundException notFoundException) {
-            log.warn("Source DB not found Exiting...");
+            for (String databaseFile : SOURCE_DATABASE_FILES) {
+                verify.verifyExists(windowsPhoneLinkSourceDir.resolve(databaseFile));
+            }
+        } catch (DatabaseNotFoundException e) {
+            log.error("Windows Phone Link Source DB not found Exiting...");
             System.exit(0);
         }
 
-        //2. check for (i) app source db (ii) compare last modify time
+        //2. check for (i) windows phone.db & source/phone.db (ii) compare last modify time
         try {
-            checkDBExistStep.checkAppSourceDB(appSourceDBPath.resolve("phone.db"));
-            for (String db : dbNames) {
-                if (checkDBExistStep.checkLastModify(sourceDbPath.resolve(db), appSourceDBPath.resolve(db))) {
-                    throw new AppSourceDatabaseNotFoundException("Triggering a reload to latest SMS");
+            for (String databaseFile : SOURCE_DATABASE_FILES) {
+                Path source = windowsPhoneLinkSourceDir.resolve(databaseFile);
+                Path target = appSourceDatabaseDir.resolve(databaseFile);
+                verify.verifyExists(target);
+
+                if (verify.isSourceNewer(source, target)) {
+                    throw new DatabaseNotFoundException("Source is newer, Triggering Reload...");
                 }
             }
-        } catch (AppSourceDatabaseNotFoundException e) {
-            log.info("Triggering Reload the App DataSource.");
-            checkDBExistStep.reloadAppSourceDB(sourceDbPath, appSourceDBPath, dbNames);
+
+        } catch (DatabaseNotFoundException e) {
+            log.error("Source Database Triggering Reloading...");
+            databaseCopyService.copyDatabaseFiles(windowsPhoneLinkSourceDir, appSourceDatabaseDir, SOURCE_DATABASE_FILES);
         }
-
-        // ---- source reloading done ----
-        // --- start app.db checkup
-
-        try {
-            if(!Files.exists(appDBPath))
-                throw new AppDatabaseNotFoundException("Triggering app.db reload cause not found");
-            if(checkDBExistStep.checkLastModify(appSourceDBPath,appDBPath))
-                throw new AppDatabaseNotFoundException("Triggering app.db reload cause lastest data found");
-        } catch (AppDatabaseNotFoundException e){
-
-        }
-
-        //--- end app.db checkup
 
     }
+
+    public void initializeAppDatabase() {
+
+        try {
+            // Create directory
+            if (Files.notExists(appPersistDatabaseDir)) {
+                Files.createDirectories(appPersistDatabaseDir);
+                log.error("App Database not found: Created app database directory: {}", appPersistDatabaseDir);
+            }
+
+            // Initialize schema
+            appSchemaInitializer.initializeSchema();
+
+        } catch (IOException e) {
+            log.error("Failed to initialize application database", e);
+            throw new RuntimeException("Application database initialization failed", e);
+        }
+    }
+
+    public void populateAppDatabase() {
+        dataSynchronizationService.syncNewMessages();
+    }
+
 }

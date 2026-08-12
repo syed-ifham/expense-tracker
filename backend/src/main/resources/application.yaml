@@ -3,10 +3,10 @@ server:
 
 app:
   version: 1.0.0
-  name: Smart Expense Tracker
+  name: Expensify
   db:
     source:
-      jdbcUrl: jdbc:sqlite:./db/source/phone.db
+      jdbcUrl: jdbc:sqlite:C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source\phone.db
       driverClassName: org.sqlite.JDBC
       metadata:
         path: ./db/source/phone.db
@@ -25,10 +25,9 @@ app:
         maximumPoolSize: 1
 
   path:
-    sourceDBPath: C:\Users\syedi\AppData\Local\Packages\Microsoft.YourPhone_8wekyb3d8bbwe\LocalCache\Indexed\fe43b75f-00e7-4bb9-b9c5-077218994971\System\Database
-    appSourceDBPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source
-    appDBPath: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\app
-
+    windowsPhoneLinkSourceDir: C:/Users/syedi/AppData/Local/Packages/Microsoft.YourPhone_8wekyb3d8bbwe/LocalCache/Indexed/fe43b75f-00e7-4bb9-b9c5-077218994971/System/Database
+    appSourceDatabaseDir: C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\source
+    appPersistDatabaseDir:  C:\Users\syedi\Desktop\Projects\smart-fin-tracker\backend\db\app
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){dim} %clr(%-5level) %clr([%thread]){magenta} %clr(%logger{0}){cyan} - %clr(%msg){yellow}%n"
